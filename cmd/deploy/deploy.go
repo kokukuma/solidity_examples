@@ -8,24 +8,38 @@ import (
 
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/common"
+	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/ethereum/go-ethereum/ethclient"
 	"github.com/joho/godotenv"
+	"github.com/kokukuma/web3/solidity/coin"
 	"github.com/kokukuma/web3/solidity/sample"
 )
 
 const (
 	// rpcProviderURL = "https://polygon-rpc.com"
 	rpcProviderURL = "https://ropsten.infura.io/v3/15f721c4df8c4f4f91dea73670b27d11"
-	accountAddress = "ee6983ACaCe98e766E5b78f0533EA74c6e734dE5"
+	accountAddress = "7E532D0E80480eCF1b566920752840bc53556366"
 )
 
+type Deployer func(auth *bind.TransactOpts, backend bind.ContractBackend) (common.Address, *types.Transaction, error)
+
 func main() {
-	if err := Main(); err != nil {
-		log.Fatalf("failed to deploy: %v", err)
+	if err := Deploy(func(auth *bind.TransactOpts, backend bind.ContractBackend) (common.Address, *types.Transaction, error) {
+		contractAddress, tx, _, err := sample.DeploySample(auth, backend)
+		return contractAddress, tx, err
+	}); err != nil {
+		log.Fatalf("failed to deploy sample: %v", err)
+	}
+
+	if err := Deploy(func(auth *bind.TransactOpts, backend bind.ContractBackend) (common.Address, *types.Transaction, error) {
+		contractAddress, tx, _, err := coin.DeployCoin(auth, backend)
+		return contractAddress, tx, err
+	}); err != nil {
+		log.Fatalf("failed to deploy coin: %v", err)
 	}
 }
 
-func Main() error {
+func Deploy(deployFunc Deployer) error {
 	ctx := context.Background()
 
 	client, err := ethclient.Dial(rpcProviderURL)
@@ -54,7 +68,7 @@ func Main() error {
 	}
 	auth.GasPrice = gasPrice
 
-	contractAddress, tx, _, err := sample.DeploySample(auth, client)
+	contractAddress, tx, err := deployFunc(auth, client)
 	if err != nil {
 		log.Fatalf("could not deploy contract: %v\n", err)
 	}
