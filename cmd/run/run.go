@@ -17,7 +17,7 @@ const (
 	// rpcProviderURL = "https://polygon-rpc.com"
 	rpcProviderURL = "https://ropsten.infura.io/v3/15f721c4df8c4f4f91dea73670b27d11"
 
-	contractAddress = "1620fa95163871dF0a3d34A01e98B95a2FF0067C"
+	contractAddress = "8b6F44eB598e240d8608b42cc04EBdBfA360BB09"
 	accountAddress  = "ee6983ACaCe98e766E5b78f0533EA74c6e734dE5"
 )
 
@@ -34,7 +34,6 @@ func main() {
 		fmt.Println("failed to get contract", err)
 		return
 	}
-	fmt.Println(instance)
 
 	//
 	gasPrice, err := GasPrice()
