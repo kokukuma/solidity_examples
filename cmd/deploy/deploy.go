@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"math/big"
 	"os"
 
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
@@ -11,6 +12,7 @@ import (
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/ethereum/go-ethereum/ethclient"
 	"github.com/joho/godotenv"
+	"github.com/kokukuma/web3/solidity/auction"
 	"github.com/kokukuma/web3/solidity/coin"
 	"github.com/kokukuma/web3/solidity/sample"
 )
@@ -36,6 +38,13 @@ func main() {
 		return contractAddress, tx, err
 	}); err != nil {
 		log.Fatalf("failed to deploy coin: %v", err)
+	}
+
+	if err := Deploy(func(auth *bind.TransactOpts, backend bind.ContractBackend) (common.Address, *types.Transaction, error) {
+		contractAddress, tx, _, err := auction.DeployAuction(auth, backend, big.NewInt(2592000), common.HexToAddress(accountAddress))
+		return contractAddress, tx, err
+	}); err != nil {
+		log.Fatalf("failed to deploy auction: %v", err)
 	}
 }
 

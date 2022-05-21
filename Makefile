@@ -8,6 +8,7 @@ build:  ## make contract and abi
 
 	abigen --abi="bin/SimpleStorage.abi" --bin="bin/SimpleStorage.bin" --pkg=sample --out="sample/sample.go"
 	abigen --abi="bin/Coin.abi" --bin="bin/Coin.bin" --pkg=coin --out="coin/coin.go"
+	abigen --abi="bin/SimpleAuction.abi" --bin="bin/SimpleAuction.bin" --pkg=auction --out="auction/auction.go"
 
 .PHONY: run
 run:  ## run contract
